@@ -56,20 +56,20 @@ app.get('/jogos/:id', async (req, res) =>{
 
 // =========== criar jogos ==============
 app.post('/jogos' , async (req, res)=>{
-    const {nome, desenvolvedora, sinopse, genero} = req.body
-    if (!nome || !desenvolvedora || !sinopse || !genero){
+    const {nome, desenvolvedora, sinopse, genero_id} = req.body
+    if (!nome || !desenvolvedora || !sinopse || !genero_id){
         return res.status(400).json({error: 'Nome, desenvolvedora, sinopse e o id do gênero são obrigatórios.'})
     }
-    const [result] = await pool.execute('INSERT INTO jogos (nome, desenvolvedora, sinopse, genero) VALUES(?, ?, ?, ?)',[nome, desenvolvedora, sinopse, genero])
-    return res.status(201).json({id:result.insertId, nome, desenvolvedora, sinopse, genero})
+    const [result] = await pool.execute('INSERT INTO jogos (nome, desenvolvedora, sinopse, genero_id) VALUES(?, ?, ?, ?)',[nome, desenvolvedora, sinopse, genero_id])
+    return res.status(201).json({id:result.insertId, nome, desenvolvedora, sinopse, genero_id})
     
 })
 
 // =========== editar jogos ==============
 app.put('/jogos/:id', async (req,res) => {
     const idInform = req.params.id
-    const {nome, desenvolvedora, sinopse, genero}= req.body
-    if (!nome || !desenvolvedora || !sinopse || !genero){
+    const {nome, desenvolvedora, sinopse, genero_id}= req.body
+    if (!nome || !desenvolvedora || !sinopse || !genero_id){
         return res.status(400).json({error: 'Nome, desenvolvedora, sinopse e o id do gênero são obrigatórios.'})
     }
     const[jogosEncontrados] = await pool.execute('SELECT *FROM jogos WHERE id = ?',[idInform])
@@ -77,10 +77,9 @@ app.put('/jogos/:id', async (req,res) => {
         return res.status(404).json({error: "Jogo não encontrado."})
     }
 
+    const [result] = await pool.execute('UPDATE jogos SET nome = ?, desenvolvedora = ?, sinopse = ?, genero_id = ? WHERE id = ?', [nome, desenvolvedora, sinopse, genero_id, idInform])
 
-    const [result] = await pool.execute('UPDATE jogos SET nome = ?, desenvolvedora = ?, sinopse = ?, genero = ? WHERE id = ?', [nome, desenvolvedora, sinopse, genero, idInform])
-
-    res.status(200).json({id:idInform, nome, desenvolvedora, sinopse, genero})
+    res.status(200).json({id:idInform, nome, desenvolvedora, sinopse, genero_id})
 })
 
 
